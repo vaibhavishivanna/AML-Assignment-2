@@ -1,0 +1,9 @@
+dataset,method,mean,std,n_runs
+FashionMNIST0.3,CE,98.15,0.30,10
+FashionMNIST0.3,Forward,98.94,0.12,10
+FashionMNIST0.3,Backward,98.03,0.34,10
+FashionMNIST0.3,T-Revision,98.93,0.13,10
+FashionMNIST0.6,CE,94.07,1.18,10
+FashionMNIST0.6,Forward,95.39,0.84,10
+FashionMNIST0.6,Backward,94.38,1.09,10
+FashionMNIST0.6,T-Revision,95.46,0.79,10

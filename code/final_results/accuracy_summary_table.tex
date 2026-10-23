@@ -1,0 +1,16 @@
+\begin{table}[t]
+\caption{Test accuracy (\%), mean $\pm$ std over random 80/20 splits.}
+\label{tab:accuracy}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Method} & \textbf{FashionMNIST0.3} & \textbf{FashionMNIST0.6} \\
+\midrule
+CE & 98.15 $\pm$ 0.30 & 94.07 $\pm$ 1.18 \\
+Forward & \textbf{98.94 $\pm$ 0.12} & 95.39 $\pm$ 0.84 \\
+Backward & 98.03 $\pm$ 0.34 & 94.38 $\pm$ 1.09 \\
+T-Revision & 98.93 $\pm$ 0.13 & \textbf{95.46 $\pm$ 0.79} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
