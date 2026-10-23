@@ -1,1 +1,8 @@
-
+curl -X DELETE \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/vaibhavishivanna/AML-Assignment-2/contents/Codes \
+  -d '{
+    "message": "Delete unused Codes file",
+    "sha": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+  }'
