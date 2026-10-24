@@ -1,5 +1,25 @@
 # Assignment 2 – label-noise robust classifiers + data preparation (Group 39)
 
+## Reproduce the complete required experiment
+
+See [code/README_PERSON3.md](code/README_PERSON3.md) for setup and results.
+From `code/`, install `requirements.txt`, place the provided datasets in `data/`,
+and run:
+
+```sh
+python run_evaluation.py --out reproduced_results
+```
+
+Tested fresh runtime: **47.75 minutes** on this laptop, including all
+30 initial models, 60 classifier fits, evaluation and plots. Dependency installation
+and dataset setup are excluded. All methods use ten random splits per dataset.
+
+The ZIP includes the completed run in `code/reference_results/`; the working
+repository uses `code/evaluation_results/`. Vaibhavi's original results remain
+in `code/final_results/`. The commands below are her original classifier workflow.
+
+## Original classifier documentation
+
 Scope of this folder: **data preparation** and the **classification models** (CE baseline, Forward,
 Backward, Reweighting + T-Revision). The transition-matrix estimator is a separate part; its output
 (3x3 `.npy`) is the only thing needed here to run CIFAR.
