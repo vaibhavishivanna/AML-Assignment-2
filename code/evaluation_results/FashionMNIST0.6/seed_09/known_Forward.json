@@ -1,0 +1,9 @@
+{
+  "dataset": "FashionMNIST0.6",
+  "seed": 9,
+  "mode": "known",
+  "method": "Forward",
+  "accuracy": 94.69999999999999,
+  "n_test": 3000,
+  "seconds": 46.272502625128254
+}

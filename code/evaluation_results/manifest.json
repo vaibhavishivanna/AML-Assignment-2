@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "config": {
+    "epochs": 4,
+    "estimator_epochs": 4,
+    "top_k": 1,
+    "warm": 2,
+    "revision_epochs": 2,
+    "fashion_estimated": false,
+    "threads": 2
+  },
+  "data_sha256": {
+    "FashionMNIST0.3": "9141a8c362b5d87b5db3905fd3117587eb1cbdcfcd9cc6269eb921f885f5f6c1",
+    "FashionMNIST0.6": "8e7613fb618acac31d8d31c9a00f4ac740bb48a8952598a34ae848aaabbb57a9",
+    "CIFAR": "1c38a86896df4f97cfa13338f6c44d4dae898ac949796ec41f75f0d0ac23565a"
+  },
+  "source_sha256": {
+    "algorithm/__init__.py": "f7cdfee65c5a36a15d1e63768aa061ff967fe3bf51c590f65f6148c0b9549e2a",
+    "algorithm/backward_correction.py": "c9d0c0228b2c076649f5e3e28425ce92cea99277e7cbae851010fcae8ddeb2b9",
+    "algorithm/base.py": "5be6b0e066e060ad3b0915342ad461ee9621bbdeb1a3c47ce51793a2d92f8dba",
+    "algorithm/ce_baseline.py": "1dc9e3beafbc4993512c95ad8a1250ae69328fb2aa6db26d461f2e12584c816b",
+    "algorithm/forward_correction.py": "c98db0adc6bb9e7f7e540b4f4fba193774051bc50f1a34aecac1892df3e0e588",
+    "algorithm/losses.py": "873dbf7cd5ae474b485846d2ad95bcad63bf944690d4317ba9b2802471b59858",
+    "algorithm/networks.py": "dcec81224b73b95067026fba7051af62be3df152683be01846f58e3756622fec",
+    "algorithm/revision_evaluation.py": "01f1ceae11e70dc73c38c4d91abe359479ab88876c8ba9922c4868d54b41e3e7",
+    "algorithm/reweight_t_revision.py": "378009a946e3853adc616c9935e37e0b04428e3fe9fe220b273773d5e3f53d64",
+    "algorithm/transition_estimation.py": "7b6f9782f1198474af392002caba25ed9fbb0c421cc83482cdbde7fe67050dfd",
+    "experiments/data_utils.py": "2af85f2089190ec563b934f455e19d68200c5fc600e20b224891efe2b310c199",
+    "evaluation.py": "2d41f9dc142af9930f5bd34b962ce69a6d502355d8c9a00bdb799a690132486b",
+    "run_evaluation.py": "ebe935c1f1561b4b8476b1ab8434fff737c920b902f2f470b7f56278e4e59f83"
+  },
+  "python": "3.12.2",
+  "numpy": "1.26.4",
+  "torch": "2.11.0",
+  "std_ddof": 0,
+  "seed_policy": "split seed = model seed = run number"
+}

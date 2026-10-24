@@ -1,0 +1,39 @@
+{
+  "dataset": "CIFAR",
+  "seed": 6,
+  "train_size": 12000,
+  "validation_size": 3000,
+  "estimator": {
+    "seconds": 53.23657299997285,
+    "condition_number": 6.471462726593018,
+    "row_argmax": [
+      0,
+      1,
+      2
+    ]
+  },
+  "classifiers": [
+    {
+      "dataset": "CIFAR",
+      "seed": 6,
+      "mode": "estimated",
+      "method": "Forward",
+      "accuracy": 69.89999999999999,
+      "n_test": 3000,
+      "seconds": 50.26953491708264
+    },
+    {
+      "dataset": "CIFAR",
+      "seed": 6,
+      "mode": "estimated",
+      "method": "Reweight-R",
+      "accuracy": 66.5,
+      "n_test": 3000,
+      "seconds": 104.05216979118995,
+      "accuracy_before_revision": 66.5,
+      "revision_gain_pp": 0.0,
+      "matrix_change_frobenius": 0.0
+    }
+  ],
+  "seconds": 209.70326283294708
+}

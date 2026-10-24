@@ -1,0 +1,54 @@
+{
+  "dataset": "FashionMNIST0.6",
+  "seed": 1,
+  "train_size": 14400,
+  "validation_size": 3600,
+  "estimator": {
+    "seconds": 43.88315270910971,
+    "condition_number": 8.065788269042969,
+    "row_argmax": [
+      0,
+      1,
+      2
+    ],
+    "errors": {
+      "mae": 0.021201478110419367,
+      "frobenius": 0.07161378819501811,
+      "relative_l1": 0.0636044343312581
+    }
+  },
+  "classifiers": [
+    {
+      "dataset": "FashionMNIST0.6",
+      "seed": 1,
+      "mode": "known",
+      "method": "Forward",
+      "accuracy": 94.1,
+      "n_test": 3000,
+      "seconds": 41.226845583179966
+    },
+    {
+      "dataset": "FashionMNIST0.6",
+      "seed": 1,
+      "mode": "known",
+      "method": "Reweight-R",
+      "accuracy": 93.36666666666666,
+      "n_test": 3000,
+      "seconds": 81.84260324994102,
+      "accuracy_before_revision": 93.36666666666666,
+      "revision_gain_pp": 0.0,
+      "matrix_change_frobenius": 3.097148194824117e-08,
+      "input_matrix_errors": {
+        "mae": 0.0,
+        "frobenius": 0.0,
+        "relative_l1": 0.0
+      },
+      "revised_matrix_errors": {
+        "mae": 9.934107462565104e-09,
+        "frobenius": 3.097148194824117e-08,
+        "relative_l1": 2.980232238769532e-08
+      }
+    }
+  ],
+  "seconds": 167.7773550420534
+}

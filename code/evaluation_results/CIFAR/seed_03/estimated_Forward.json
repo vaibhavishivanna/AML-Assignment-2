@@ -1,0 +1,9 @@
+{
+  "dataset": "CIFAR",
+  "seed": 3,
+  "mode": "estimated",
+  "method": "Forward",
+  "accuracy": 30.099999999999998,
+  "n_test": 3000,
+  "seconds": 52.47611187514849
+}

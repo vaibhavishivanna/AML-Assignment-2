@@ -1,0 +1,30 @@
+{
+  "status": "complete",
+  "command": [
+    "python",
+    "run_evaluation.py",
+    "--out",
+    "reproduced_results"
+  ],
+  "fresh_output": true,
+  "cached_estimates_used": false,
+  "started_utc": "2026-10-24T11:25:25.972734+00:00",
+  "started_sydney": "2026-10-24T22:25:25.972734+11:00",
+  "machine": "arm64",
+  "platform": "macOS-13.7.8-arm64-arm-64bit",
+  "cpu_count": 8,
+  "ram_gib": 8.0,
+  "includes": "Data loading, initial estimation, classifier training, test evaluation, tables and plots",
+  "excludes": "Dependency installation, ZIP extraction and supplying datasets",
+  "exit_code": 0,
+  "command_seconds": 2865.1885859998874,
+  "command_minutes": 47.75314309999813,
+  "completed_utc": "2026-10-24T12:13:11.166164+00:00",
+  "estimator_runs": 30,
+  "completed_splits": 30,
+  "classifier_runs": 60,
+  "benchmarked_archive_sha256": "3ffaaf1b54b34db2b70a95f075fc09d7847d8c9ee9ea392479f19fcb09cd858f",
+  "source_matches_workspace": true,
+  "verified_prediction_arrays": 90,
+  "result_checks_passed": true
+}
