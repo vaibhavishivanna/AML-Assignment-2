@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 from .base import BaseClassifier
-from .losses import ce_loss, reweight_loss
+from .losses import ce_loss, reweight_loss, forward_loss
 
 EPS = 1e-7
 
@@ -19,7 +19,7 @@ class ReweightTRevision(BaseClassifier):
     """
     name = "T-Revision"
 
-    def __init__(self, warm=3, rev_epochs=8, lr_rev=1e-4, lr_dT=1e-3, **kw):
+    def __init__(self, warm=3, rev_epochs=8, lr_rev=1e-4, lr_dT=1e-4, **kw):
         super().__init__(**kw)
         self.warm, self.rev_epochs, self.lr_rev, self.lr_dT = warm, rev_epochs, lr_rev, lr_dT
         self.T_revised_ = None
@@ -45,7 +45,11 @@ class ReweightTRevision(BaseClassifier):
         for ep in range(self.rev_epochs):
             m.train()
             for b in self._batches(len(Xt), rng):
-                loss = reweight_loss(m(Xt[b]), St[b], self._apply(T, dT), detach_beta=False)
+                loss = forward_loss(
+                    m(Xt[b]),
+                    St[b],
+                    self._apply(T, dT)
+            )   
                 opt.zero_grad(); loss.backward(); opt.step()
             v = self._val_fwd_nll(Xv, Sv, self._apply(T, dT).detach())
             if self.verbose:
