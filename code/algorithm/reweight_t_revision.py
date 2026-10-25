@@ -36,6 +36,9 @@ class ReweightTRevision(BaseClassifier):
         self.T_revised_ = T.clone().numpy()
         dT = nn.Parameter(torch.zeros_like(T))
         best = self._val_fwd_nll(Xv, Sv, T)
+
+        if self.verbose:
+            print(f"Initial revision validation loss: {best:.6f}")
         best_state, best_dT = copy.deepcopy(m.state_dict()), dT.detach().clone()
         opt = torch.optim.Adam([{"params": m.parameters(), "lr": self.lr_rev, "weight_decay": self.wd},
                                 {"params": [dT], "lr": self.lr_dT}])
@@ -46,7 +49,16 @@ class ReweightTRevision(BaseClassifier):
                 opt.zero_grad(); loss.backward(); opt.step()
             v = self._val_fwd_nll(Xv, Sv, self._apply(T, dT).detach())
             if self.verbose:
-                print(f"  [T-Rev] rev ep{ep + 1:02d} val_nll(T+dT)={v:.4f}")
+                matrix_change = torch.norm(
+                    self._apply(T, dT).detach() - T
+                ).item()
+
+                print(
+                    f"[T-Rev] Epoch {ep + 1}: "
+                    f"val_loss={v:.6f}, "
+                    f"best_loss={best:.6f}, "
+                    f"matrix_change={matrix_change:.8f}"
+                )
             if v < best:
                 best, best_state, best_dT = v, copy.deepcopy(m.state_dict()), dT.detach().clone()
         m.load_state_dict(best_state)
