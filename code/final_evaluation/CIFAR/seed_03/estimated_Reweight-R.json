@@ -1,0 +1,12 @@
+{
+  "dataset": "CIFAR",
+  "seed": 3,
+  "mode": "estimated",
+  "method": "Reweight-R",
+  "accuracy": 62.7,
+  "n_test": 3000,
+  "seconds": 75.680177458,
+  "accuracy_before_revision": 62.7,
+  "revision_gain_pp": 0.0,
+  "matrix_change_frobenius": 0.0
+}

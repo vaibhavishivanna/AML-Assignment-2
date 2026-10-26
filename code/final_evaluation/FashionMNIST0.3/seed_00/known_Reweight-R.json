@@ -1,0 +1,22 @@
+{
+  "dataset": "FashionMNIST0.3",
+  "seed": 0,
+  "mode": "known",
+  "method": "Reweight-R",
+  "accuracy": 98.76666666666667,
+  "n_test": 3000,
+  "seconds": 73.77679625,
+  "accuracy_before_revision": 98.56666666666666,
+  "revision_gain_pp": 0.20000000000000284,
+  "matrix_change_frobenius": 0.011099097410311136,
+  "input_matrix_errors": {
+    "mae": 0.0,
+    "frobenius": 0.0,
+    "relative_l1": 0.0
+  },
+  "revised_matrix_errors": {
+    "mae": 0.0030004441738128627,
+    "frobenius": 0.011099097410311136,
+    "relative_l1": 0.009001332521438588
+  }
+}
