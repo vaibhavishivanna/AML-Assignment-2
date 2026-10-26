@@ -7,3 +7,16 @@ __pycache__/
 code/data/*
 !code/data/.gitkeep
 code/data/*.npz
+# Local experiment and diagnostic folders
+/code/cifar_k10_evaluation/
+/code/estimator_k10/
+/code/estimator_k5/
+/code/evaluation_results_rerun/
+/code/revision_8epochs_test/
+/code/revision_diagnostic/
+/code/revision_forward_10seeds/
+/code/revision_forward_3seeds/
+/code/revision_forward_objective_test/
+/code/revision_lr_diagnostic/
+/code/revision_lr_diagnostic_v2/
+/code/revision_lr_test/
