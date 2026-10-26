@@ -9,13 +9,22 @@ EPS = 1e-7
 
 
 class ReweightTRevision(BaseClassifier):
-    """Importance reweighting + T-Revision (Xia et al., NeurIPS 2019), three stages:
-      1. CE warm-up on noisy labels                            (`warm` epochs)
-      2. importance-reweighting loss with fixed T               (`epochs` epochs)
-      3. revision: learn Delta T (init 0) jointly with the classifier, loss uses T + Delta T
-         (`rev_epochs` epochs). T + Delta T is clamped >= 0 and row-normalised.
-    A revision epoch is accepted only if the noisy-validation forward NLL computed with the
-    revised matrix is lower than the best so far (initially the value with the input T).
+    """Importance reweighting with a forward-loss transition revision stage.
+
+    Three training stages:
+      1. Cross-entropy warmup to initialize the classifier.
+      2. Importance reweighting using a fixed transition matrix.
+      3. Jointly optimize the classifier and a transition-matrix
+         correction Delta T using forward-corrected loss.
+
+    The revised transition matrix is constrained to be nonnegative
+    and row-stochastic.
+
+    The best revision checkpoint is selected using noisy-validation
+    forward negative log-likelihood.
+
+    This is a modified T-Revision-inspired approach, not an exact
+    reproduction of Xia et al. (NeurIPS 2019).
     """
     name = "T-Revision"
 
