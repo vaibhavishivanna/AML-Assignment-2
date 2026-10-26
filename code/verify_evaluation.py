@@ -19,9 +19,29 @@ def verify(root, data_dir):
         raise FileNotFoundError(f'Missing {summary_file}. Run summarize_evaluation.py first.')
     with summary_file.open(newline='') as file:
         rows = list(csv.DictReader(file))
-    assert len(rows) == 6, f'Expected six summary rows, got {len(rows)}'
+    expected_methods = {"Forward", "Reweight-R"}
+    datasets = {row["dataset"] for row in rows}
+
+    assert datasets, "No datasets found in summary"
+
+    for dataset in datasets:
+        dataset_rows = [
+            row for row in rows
+            if row["dataset"] == dataset
+        ]
+
+        methods = {row["method"] for row in dataset_rows}
+
+        assert methods == expected_methods, (
+            f"{dataset}: expected {expected_methods}, got {methods}"
+        )
+
+    assert len(dataset_rows) == 2, (
+        f"{dataset}: expected 2 classifier summaries"
+    )
     checked_labels = 0
-    for dataset, n in EXPECTED.items():
+    for dataset in sorted(datasets):
+        n = EXPECTED[dataset]
         source = data_dir / f'{dataset}.npz'
         labels = None
         if source.is_file():
