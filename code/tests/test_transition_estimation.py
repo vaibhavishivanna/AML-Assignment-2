@@ -87,6 +87,9 @@ def test_cifar_pipeline_saves_matrices_predictions_and_resumes(tmp_path, monkeyp
     assert sum(int(row[k]) for k in ["improved", "worsened", "unchanged"]) == 1
     main(argv)
     assert len(list(out.glob("CIFAR/seed_*/metrics.json"))) == 1
+    runtime = json.loads((out / "runtime_measured.json").read_text())
+    assert runtime["wall_seconds"] > 0
+    assert runtime["completed_splits_already_present_at_start"] == 1
     with pytest.raises(SystemExit):
         main(argv + ["--epochs", "2"])
 

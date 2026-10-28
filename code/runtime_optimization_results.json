@@ -1,0 +1,356 @@
+{
+  "status": "Completed; recommended execution settings verified against baseline",
+  "date_local": "2026-10-29",
+  "timezone": "Australia/Sydney",
+  "baseline": {
+    "workers": 2,
+    "threads_per_worker": 2,
+    "wall_seconds": 4200.191185582895,
+    "runs_per_dataset": 10,
+    "estimator_fits": 30,
+    "classifier_fits": 60,
+    "record": "runtime_benchmark.json"
+  },
+  "recommended": {
+    "workers": 4,
+    "threads_per_worker": 1,
+    "dataset_order": "original mixed seed order",
+    "wall_seconds": 3513.2040440002456,
+    "display_runtime": "58 minutes 33.20 seconds",
+    "saved_seconds": 686.9871415826492,
+    "runtime_reduction_percent": 16.356092168868987,
+    "command": "python run_evaluation.py --runs 10 --workers 4 --threads 1 --out reproduced_results",
+    "fresh_output": true,
+    "completed_splits": 30,
+    "estimator_fits": 30,
+    "classifier_fits": 60,
+    "started_at_utc": "2026-10-28T16:56:46.641617+00:00",
+    "finished_at_utc": "2026-10-28T17:55:19.836356+00:00",
+    "scope": "Process startup, all fits, evaluation, tables and plots; excludes installation and subsequent verification",
+    "verification_exit_code": 0,
+    "reference_comparison": {
+      "compared_arrays": 360,
+      "all_exact": true,
+      "covers": [
+        "initial and revised matrices",
+        "classifier input matrices",
+        "final and pre-revision predictions",
+        "anchor indices",
+        "train/validation split indices",
+        "training-only normalization"
+      ]
+    },
+    "source_and_data_hashes_match_baseline": true,
+    "full_local_results": "runtime_optimization_20261029/full_mixed/w4_t1/"
+  },
+  "settings_preserved": {
+    "datasets": [
+      "FashionMNIST0.3",
+      "FashionMNIST0.6",
+      "CIFAR"
+    ],
+    "runs_per_dataset": 10,
+    "train_validation_split": "80/20",
+    "estimator_epochs": 4,
+    "top_k": 10,
+    "forward_epochs": 4,
+    "reweight_warm_epochs": 2,
+    "reweight_fixed_epochs": 4,
+    "reweight_revision_epochs": 8,
+    "architecture": "unchanged SmallCNN",
+    "losses": "unchanged",
+    "model_selection": "noisy validation only",
+    "transition_convention": "T[clean, noisy]; noisy posterior = clean posterior @ T"
+  },
+  "screening_trials": [
+    {
+      "configuration": "2 workers x 2 threads",
+      "workload": "1 split x all 3 datasets; 3 estimators and 6 classifiers",
+      "wall_seconds": 496.40376441692933,
+      "verified": true,
+      "checked_arrays_exact": true
+    },
+    {
+      "configuration": "3 workers x 2 threads",
+      "workload": "1 split x all 3 datasets; 3 estimators and 6 classifiers",
+      "wall_seconds": 421.7429202920757,
+      "verified": true,
+      "checked_arrays_exact": true
+    },
+    {
+      "configuration": "3 workers x 2 threads",
+      "workload": "6 estimator fits only",
+      "wall_seconds": 220.4699997091666,
+      "peak_worker_rss_bytes": 644300800,
+      "checked_arrays_exact": true
+    },
+    {
+      "configuration": "4 workers x 2 threads",
+      "workload": "6 estimator fits only",
+      "wall_seconds": 169.96321475040168,
+      "peak_worker_rss_bytes": 744357888,
+      "checked_arrays_exact": true
+    },
+    {
+      "configuration": "4 workers x 1 thread",
+      "workload": "6 estimator fits only",
+      "wall_seconds": 150.22505387477577,
+      "peak_worker_rss_bytes": 746749952,
+      "checked_arrays_exact": true
+    },
+    {
+      "configuration": "RGB channels-last memory layout",
+      "workload": "one complete CIFAR split; 1 estimator and 2 classifiers",
+      "wall_seconds": 182.01101508410648,
+      "split_seconds": 175.0381887499243,
+      "baseline_split_seconds": 166.96965349977836,
+      "checked_arrays_exact": true,
+      "decision": "Not adopted: no measured benefit"
+    },
+    {
+      "configuration": "Inference batch sizes 64/128/256/512/1024",
+      "workload": "full-validation inference timing probes",
+      "checked_logits_exact": true,
+      "decision": "Not adopted: no consistent speed gain; kept original 1024"
+    },
+    {
+      "configuration": "All CIFAR jobs first, 4 workers x 1 thread",
+      "workload": "partial full-run trial, stopped after RGB contention increased per-fit time",
+      "partial_wall_seconds": 461.12003345927224,
+      "completed_full_experiment": false,
+      "decision": "Rejected; production scheduling restored to baseline"
+    }
+  ],
+  "tests": {
+    "passed": 32,
+    "command": "python -m pytest -q tests"
+  },
+  "code_mark_readiness": {
+    "assessment": "High; approximately 18-20/20 based on the supplied code criteria",
+    "scope": "Code section only; assessor determines the final mark. This is an estimate, not a statistical probability.",
+    "basis": [
+      "all required experiments retained",
+      "32 tests pass",
+      "complete fresh run below one hour on tested host",
+      "all 360 saved arrays exactly match the verified baseline",
+      "source and dataset hashes match the verified baseline"
+    ]
+  },
+  "environment": {
+    "platform": "macOS-13.7.8-arm64-arm-64bit",
+    "logical_cpu_count": 8,
+    "python": "3.12.2",
+    "numpy": "1.26.4",
+    "torch": "2.11.0"
+  },
+  "accuracy_summary": [
+    {
+      "dataset": "CIFAR",
+      "mode": "estimated",
+      "method": "Forward",
+      "n_runs": "10",
+      "accuracy_mean": "64.72333333333333",
+      "accuracy_std": "8.90439404638706"
+    },
+    {
+      "dataset": "CIFAR",
+      "mode": "estimated",
+      "method": "Reweight-R",
+      "n_runs": "10",
+      "accuracy_mean": "65.67666666666666",
+      "accuracy_std": "7.545448223193166"
+    },
+    {
+      "dataset": "FashionMNIST0.3",
+      "mode": "known",
+      "method": "Forward",
+      "n_runs": "10",
+      "accuracy_mean": "98.51000000000002",
+      "accuracy_std": "0.11259563836036138"
+    },
+    {
+      "dataset": "FashionMNIST0.3",
+      "mode": "known",
+      "method": "Reweight-R",
+      "n_runs": "10",
+      "accuracy_mean": "98.8",
+      "accuracy_std": "0.13249737942901227"
+    },
+    {
+      "dataset": "FashionMNIST0.6",
+      "mode": "known",
+      "method": "Forward",
+      "n_runs": "10",
+      "accuracy_mean": "95.05",
+      "accuracy_std": "0.9685326817178432"
+    },
+    {
+      "dataset": "FashionMNIST0.6",
+      "mode": "known",
+      "method": "Reweight-R",
+      "n_runs": "10",
+      "accuracy_mean": "95.21",
+      "accuracy_std": "0.6604796237079045"
+    }
+  ],
+  "training_step_probes": {
+    "scope": "Warmed-up synthetic 128-image batches on the unchanged CNN; diagnostic timings only, not full experiment runtimes",
+    "records": [
+      {
+        "dataset": "FashionMNIST",
+        "threads": 1,
+        "deterministic_algorithms": true,
+        "warmup_steps": 3,
+        "batch_size": 128,
+        "median_step_seconds": 0.05738641647621989,
+        "iqr_seconds": 0.0011176044354215264,
+        "timed_blocks": 18
+      },
+      {
+        "dataset": "FashionMNIST",
+        "threads": 2,
+        "deterministic_algorithms": true,
+        "warmup_steps": 3,
+        "batch_size": 128,
+        "median_step_seconds": 0.04391149990260601,
+        "iqr_seconds": 0.0016180207021534443,
+        "timed_blocks": 23
+      },
+      {
+        "dataset": "FashionMNIST",
+        "threads": 4,
+        "deterministic_algorithms": true,
+        "warmup_steps": 3,
+        "batch_size": 128,
+        "median_step_seconds": 0.04211364593356848,
+        "iqr_seconds": 0.0015068752691149712,
+        "timed_blocks": 24
+      },
+      {
+        "dataset": "CIFAR",
+        "threads": 1,
+        "deterministic_algorithms": true,
+        "warmup_steps": 3,
+        "batch_size": 128,
+        "median_step_seconds": 0.07616045861504972,
+        "iqr_seconds": 0.000744094024412334,
+        "timed_blocks": 14
+      },
+      {
+        "dataset": "CIFAR",
+        "threads": 2,
+        "deterministic_algorithms": true,
+        "warmup_steps": 3,
+        "batch_size": 128,
+        "median_step_seconds": 0.058797103818506,
+        "iqr_seconds": 0.0014139595441520214,
+        "timed_blocks": 16
+      },
+      {
+        "dataset": "CIFAR",
+        "threads": 4,
+        "deterministic_algorithms": true,
+        "warmup_steps": 3,
+        "batch_size": 128,
+        "median_step_seconds": 0.05446035414934158,
+        "iqr_seconds": 0.003160645253956318,
+        "timed_blocks": 18
+      }
+    ]
+  },
+  "inference_probes": {
+    "scope": "Full validation-sized synthetic inputs, unchanged CNN and two threads; exact-logit comparisons against inference batch 1024",
+    "records": [
+      {
+        "dataset": "FashionMNIST",
+        "batch_size": 64,
+        "median_seconds": 0.3717522919178009,
+        "iqr_seconds": 0.0029297710862010717,
+        "timed_blocks": 3,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "FashionMNIST",
+        "batch_size": 128,
+        "median_seconds": 0.36930799996480346,
+        "iqr_seconds": 0.0071228123269975185,
+        "timed_blocks": 3,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "FashionMNIST",
+        "batch_size": 256,
+        "median_seconds": 0.3570643342100084,
+        "iqr_seconds": 0.0029661671724170446,
+        "timed_blocks": 3,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "FashionMNIST",
+        "batch_size": 512,
+        "median_seconds": 0.35267091589048505,
+        "iqr_seconds": 0.002401770558208227,
+        "timed_blocks": 3,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "FashionMNIST",
+        "batch_size": 1024,
+        "median_seconds": 0.35172474989667535,
+        "iqr_seconds": 0.0011465833522379398,
+        "timed_blocks": 3,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "CIFAR",
+        "batch_size": 64,
+        "median_seconds": 0.5733471454586834,
+        "iqr_seconds": 0.04459593747742474,
+        "timed_blocks": 2,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "CIFAR",
+        "batch_size": 128,
+        "median_seconds": 0.5664506256580353,
+        "iqr_seconds": 0.0019588335417211056,
+        "timed_blocks": 2,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "CIFAR",
+        "batch_size": 256,
+        "median_seconds": 0.6249829998705536,
+        "iqr_seconds": 0.019951292080804706,
+        "timed_blocks": 2,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "CIFAR",
+        "batch_size": 512,
+        "median_seconds": 0.6919687080662698,
+        "iqr_seconds": 0.008485417114570737,
+        "timed_blocks": 2,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      },
+      {
+        "dataset": "CIFAR",
+        "batch_size": 1024,
+        "median_seconds": 0.5623342914041132,
+        "iqr_seconds": 0.04748058342374861,
+        "timed_blocks": 2,
+        "exact_logits": true,
+        "max_logit_difference": 0.0
+      }
+    ]
+  }
+}

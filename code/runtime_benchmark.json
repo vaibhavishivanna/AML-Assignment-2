@@ -1,0 +1,116 @@
+{
+  "status": "completed and independently verified",
+  "wall_seconds": 4200.191185582895,
+  "wall_minutes": 70.00318642638157,
+  "display_runtime": "1 hour 10 minutes (4200.19 seconds)",
+  "started_at_utc": "2026-10-28T14:29:56.301379+00:00",
+  "finished_at_utc": "2026-10-28T15:39:56.619234+00:00",
+  "command": "python run_evaluation.py --runs 10 --top-k 10 --revision-epochs 8 --workers 2 --threads 2 --out runtime_evaluation_20261029",
+  "scope": "Fresh full experiment process, including interpreter/import startup, data loading, 30 estimators, 60 classifiers, evaluation, summaries and plots; excludes dependency installation, dataset copying, tests and subsequent independent verification",
+  "fresh_output": true,
+  "dataset_location": "data/ relative to code/run_evaluation.py",
+  "datasets": [
+    "FashionMNIST0.3",
+    "FashionMNIST0.6",
+    "CIFAR"
+  ],
+  "runs_per_dataset": 10,
+  "estimator_fits": 30,
+  "classifier_fits": 60,
+  "settings": {
+    "epochs": 4,
+    "estimator_epochs": 4,
+    "top_k": 10,
+    "warm": 2,
+    "revision_epochs": 8,
+    "fashion_estimated": false,
+    "threads": 2
+  },
+  "environment": {
+    "platform": "macOS-13.7.8-arm64-arm-64bit",
+    "logical_cpu_count": 8,
+    "python": "3.12.2",
+    "numpy": "1.26.4",
+    "torch": "2.11.0"
+  },
+  "verification": {
+    "splits": 30,
+    "estimated_matrices": 30,
+    "classifier_input_matrices": 60,
+    "revised_matrices": 30,
+    "recomputed_final_accuracies": 60,
+    "recomputed_pre_revision_accuracies": 30,
+    "source_and_data_hashes_match": true
+  },
+  "accuracy_summary": [
+    {
+      "dataset": "CIFAR",
+      "mode": "estimated",
+      "method": "Forward",
+      "n_runs": "10",
+      "accuracy_mean": "64.72333333333333",
+      "accuracy_std": "8.90439404638706"
+    },
+    {
+      "dataset": "CIFAR",
+      "mode": "estimated",
+      "method": "Reweight-R",
+      "n_runs": "10",
+      "accuracy_mean": "65.67666666666666",
+      "accuracy_std": "7.545448223193166"
+    },
+    {
+      "dataset": "FashionMNIST0.3",
+      "mode": "known",
+      "method": "Forward",
+      "n_runs": "10",
+      "accuracy_mean": "98.51000000000002",
+      "accuracy_std": "0.11259563836036138"
+    },
+    {
+      "dataset": "FashionMNIST0.3",
+      "mode": "known",
+      "method": "Reweight-R",
+      "n_runs": "10",
+      "accuracy_mean": "98.8",
+      "accuracy_std": "0.13249737942901227"
+    },
+    {
+      "dataset": "FashionMNIST0.6",
+      "mode": "known",
+      "method": "Forward",
+      "n_runs": "10",
+      "accuracy_mean": "95.05",
+      "accuracy_std": "0.9685326817178432"
+    },
+    {
+      "dataset": "FashionMNIST0.6",
+      "mode": "known",
+      "method": "Reweight-R",
+      "n_runs": "10",
+      "accuracy_mean": "95.21",
+      "accuracy_std": "0.6604796237079045"
+    }
+  ],
+  "source_sha256": {
+    "algorithm/__init__.py": "f7cdfee65c5a36a15d1e63768aa061ff967fe3bf51c590f65f6148c0b9549e2a",
+    "algorithm/backward_correction.py": "c9d0c0228b2c076649f5e3e28425ce92cea99277e7cbae851010fcae8ddeb2b9",
+    "algorithm/base.py": "05d868eb5cff97b76547a9f656d1fa0ee8820e57753da135273e7f97a2facae8",
+    "algorithm/ce_baseline.py": "1dc9e3beafbc4993512c95ad8a1250ae69328fb2aa6db26d461f2e12584c816b",
+    "algorithm/forward_correction.py": "c98db0adc6bb9e7f7e540b4f4fba193774051bc50f1a34aecac1892df3e0e588",
+    "algorithm/losses.py": "873dbf7cd5ae474b485846d2ad95bcad63bf944690d4317ba9b2802471b59858",
+    "algorithm/networks.py": "dcec81224b73b95067026fba7051af62be3df152683be01846f58e3756622fec",
+    "algorithm/revision_evaluation.py": "01f1ceae11e70dc73c38c4d91abe359479ab88876c8ba9922c4868d54b41e3e7",
+    "algorithm/reweight_t_revision.py": "bdf9c98dabeefc71dbe397fce4a120f3ecc78a536ba7a9bedfa0a0a40fbc3140",
+    "algorithm/transition_estimation.py": "01e8839eafe125240a339dbc50f261f3c4080c1b3c0374a918262983d980a8ae",
+    "experiments/data_utils.py": "b4b30e9cf77f63943e29ab1357fb9a7f5fec5e948e37a51c24afa98ab5275ba3",
+    "transition_matrix.py": "a2ab715853bb249b401a40f655a3c31d196d523d6258d1388a4b2f21d7c5ffe8",
+    "evaluation.py": "2d41f9dc142af9930f5bd34b962ce69a6d502355d8c9a00bdb799a690132486b",
+    "run_evaluation.py": "0460341b3d15e0ea0823ad1acfe64e27c8bdf4304e7f84a8a76d81ce292e9a56"
+  },
+  "data_sha256": {
+    "FashionMNIST0.3": "9141a8c362b5d87b5db3905fd3117587eb1cbdcfcd9cc6269eb921f885f5f6c1",
+    "FashionMNIST0.6": "8e7613fb618acac31d8d31c9a00f4ac740bb48a8952598a34ae848aaabbb57a9",
+    "CIFAR": "1c38a86896df4f97cfa13338f6c44d4dae898ac949796ec41f75f0d0ac23565a"
+  }
+}

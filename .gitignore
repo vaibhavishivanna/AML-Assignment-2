@@ -8,6 +8,8 @@ code/data/*
 !code/data/.gitkeep
 code/data/*.npz
 code/*.npz
+/code/runtime_evaluation_*/
+/code/runtime_optimization_*/
 # Local experiment and diagnostic folders
 /code/cifar_k10_evaluation/
 /code/estimator_k10/

@@ -9,15 +9,16 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m pytest -q tests
-python run_evaluation.py --runs 10 --top-k 10 --revision-epochs 8 --out reproduced_results
+python run_evaluation.py --runs 10 --workers 4 --threads 1 --out reproduced_results
 python verify_evaluation.py --results reproduced_results
 ```
 
 Place the three assignment datasets in `code/data/`. The default is `data/`
 relative to the Python scripts, not the launch working directory. Keep `.gitkeep`
 tracked and exclude the `.npz` files from Git and the submission ZIP. Alternatively
-add `--data-dir PATH` to both commands for another relative location. Two workers
-and two PyTorch threads per worker are the defaults. Use a fresh output path: manifests
+add `--data-dir PATH` to both commands for another relative location. The command
+above uses the tested fast profile: four workers and one thread each. The original
+default of two workers/two threads remains available for lower-memory machines. Use a fresh output path: manifests
 check source, data, settings, environment and the transition convention when resuming.
 
 ## Matrix contract and estimator
@@ -57,6 +58,34 @@ Revision compares the selected fixed-stage checkpoint with the selected final
 checkpoint. It includes extra optimization, so gains do not isolate matrix revision
 against an equal-budget control. CIFAR has no known matrix-error target.
 
+## Verified faster execution profile
+
+The complete fresh workload took **58 minutes 33.20 seconds** with
+`--workers 4 --threads 1`, compared with **70 minutes 0.19 seconds** for the original
+`--workers 2 --threads 2` profile on this eight-logical-CPU ARM64 Mac. This saves
+**16.36%** of measured elapsed time, including startup, all fits, evaluation,
+tables and plots. Installation, copying datasets and subsequent verification are
+excluded. Runtime is hardware- and load-dependent.
+
+All **360 saved arrays** matched the 70-minute run exactly, and all 60 final plus
+30 pre-revision accuracies were independently recomputed. Training/evaluation
+source and dataset hashes match the baseline. No data, fits, epochs, validation,
+transition estimation or model-selection steps were removed or changed.
+
+See `runtime_optimization_results.json` for the trial comparison. The full local
+outputs are `runtime_optimization_20261029/full_mixed/w4_t1/`. These are fresh
+verified results, separate from the historical shared-report records below:
+
+| Dataset | Forward | Reweight-R |
+|---|---:|---:|
+| FashionMNIST0.3 | 98.51 +/- 0.11 | 98.80 +/- 0.13 |
+| FashionMNIST0.6 | 95.05 +/- 0.97 | 95.21 +/- 0.66 |
+| CIFAR | 64.72 +/- 8.90 | 65.68 +/- 7.55 |
+
+Use a fresh output folder after changing thread settings. The original profile and
+its measured record (`runtime_benchmark.json`) are preserved. The shared report
+has not been edited during this code/runtime task.
+
 ## Saved results and provenance
 
 The final report uses `final_evaluation/`:
@@ -85,8 +114,17 @@ Historical `final_evaluation/` accuracy (percent, mean +/- population SD):
 | CIFAR | 66.32 +/- 7.17 | 65.85 +/- 6.14 |
 
 `evaluation_results/` contains the older k=1/two-revision-epoch study;
-`final_results/` contains the original classifier study. These records remain
-separate from the selected `final_evaluation/` experiment.
+`final_results/` contains the original classifier study. The earlier 47.75-minute
+full-run timing belongs to the older profile. The original two-worker full profile was freshly measured on 29 October 2026 at **4,200.19
+seconds (1 hour 10 minutes)**, including process startup, all model fits, evaluation,
+tables and plots. It used an ARM64 Mac with eight logical CPU cores, two workers
+and two threads per worker. Installation, dataset copying and independent
+verification are excluded. `runtime_benchmark.json` records the timing, settings,
+source/data hashes and fresh accuracy summary. All 60 final and 30 pre-revision
+accuracies were independently recomputed successfully. The local full run is
+`runtime_evaluation_20261029/` (ignored by Git); its summaries differ from the
+historical `final_evaluation/` records, so these remain separate. A source change requires a fresh output directory; existing
+historical results remain available for read-only verification.
 
 Verification checks splits, stochastic initial/input/revised matrices, equality of
 classifier inputs to the supplied or per-split estimated matrices, matrix error
@@ -96,3 +134,8 @@ checks establishes internal consistency, not the unknown CIFAR matrix's accuracy
 
 `--estimate-only` runs estimation alone. `--fashion-estimated --out sensitivity_results`
 adds an optional sensitivity experiment using estimated FashionMNIST matrices.
+
+Each invocation prints its measured elapsed time and saves `runtime_measured.json`.
+That timer covers setup through tables/plots, after Python imports. For a resumed
+run it measures only that invocation; `completed_splits_already_present_at_start`
+records how many full split results were already cached.

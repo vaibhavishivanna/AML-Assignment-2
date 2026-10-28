@@ -1,6 +1,7 @@
 """Estimate per-split matrices and evaluate Forward and Reweight-R."""
 import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -141,6 +142,8 @@ def run_split(dataset, seed, config, data_dir, output, estimate_only=False):
 
 
 def main(argv=None):
+    started_at = datetime.now(timezone.utc).isoformat()
+    started = time.perf_counter()
     root = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", type=Path, default=default_data_dir(),
@@ -177,6 +180,8 @@ def main(argv=None):
     atomic_json(manifest_path, manifest)
     jobs = [(d, s, manifest["config"], str(args.data_dir.resolve()), str(args.out.resolve()), args.estimate_only)
             for s in range(args.seed_start, args.seed_start + args.runs) for d in args.datasets]
+    completed_at_start = sum((args.out / d / f"seed_{s:02d}" / "metrics.json").exists()
+                             for d, s, *_ in jobs)
     if args.workers == 1:
         for job in jobs:
             result = run_split(*job)
@@ -189,7 +194,17 @@ def main(argv=None):
                 print(f"Completed {result['dataset']} seed={result['seed']}", flush=True)
     from summarize_evaluation import summarize_results
     summarize_results(args.out)
-
+    elapsed = time.perf_counter() - started
+    runtime = {"started_at_utc": started_at,
+               "finished_at_utc": datetime.now(timezone.utc).isoformat(),
+               "wall_seconds": elapsed,
+               "scope": "This invocation: setup, fits or cached results, evaluation, tables and plots; excludes interpreter/import startup and dependency installation",
+               "datasets": args.datasets, "runs_per_dataset": args.runs,
+               "workers": args.workers, "threads_per_worker": args.threads,
+               "estimate_only": args.estimate_only,
+               "completed_splits_already_present_at_start": completed_at_start}
+    atomic_json(args.out / "runtime_measured.json", runtime)
+    print(f"Measured invocation runtime: {elapsed:.2f} seconds ({elapsed / 60:.2f} minutes)", flush=True)
 
 
 if __name__ == "__main__":
