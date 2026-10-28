@@ -5,9 +5,6 @@ import torch.nn as nn
 from .base import BaseClassifier
 from .losses import ce_loss, reweight_loss, forward_loss
 
-EPS = 1e-7
-
-
 class ReweightTRevision(BaseClassifier):
     """Importance reweighting with a forward-loss transition revision stage.
 
@@ -36,7 +33,11 @@ class ReweightTRevision(BaseClassifier):
     @staticmethod
     def _apply(T, dT):
         Tr = torch.clamp(T + dT, min=0.0)
-        return Tr / Tr.sum(1, keepdim=True).clamp_min(EPS)
+        # Clipping can erase a whole row. Retain that input row so the result
+        # remains a probability distribution over noisy labels for this class.
+        Tr = torch.where(Tr.sum(1, keepdim=True) > 0, Tr, T)
+        # Rows with tiny positive mass also need a unit sum, not an EPS-scaled sum.
+        return Tr / Tr.sum(1, keepdim=True)
 
     def _fit(self, Xt, St, Xv, Sv, T, rng):
         m = self.model

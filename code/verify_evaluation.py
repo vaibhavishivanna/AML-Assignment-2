@@ -13,6 +13,8 @@ import json
 from pathlib import Path
 
 import numpy as np
+from transition_matrix import KNOWN_T, matrix_errors, validate_transition
+from experiments.data_utils import default_data_dir
 
 
 EXPECTED = {
@@ -22,6 +24,26 @@ EXPECTED = {
 }
 
 METHODS = {"Forward", "Reweight-R"}
+
+
+def verify_classifier_matrices(folder, dataset, mode, method, estimate, record):
+    """Check the actual saved classifier inputs, including their orientation."""
+    prefix = folder / f"{mode}_{method}"
+    matrix = validate_transition(np.load(str(prefix) + "_T_input.npy"))
+    expected = KNOWN_T[dataset] if mode == "known" else estimate
+    np.testing.assert_allclose(
+        matrix, expected, rtol=0, atol=1e-7,
+        err_msg=f"{prefix}: input must equal the supplied/estimated clean-row matrix; do not transpose it")
+    if method != "Reweight-R":
+        return
+    revised = validate_transition(np.load(str(prefix) + "_T_revised.npy"))
+    np.testing.assert_allclose(
+        record["matrix_change_frobenius"], np.linalg.norm(revised - matrix), rtol=0, atol=1e-8)
+    if dataset in KNOWN_T:
+        for key, value in [("input_matrix_errors", matrix), ("revised_matrix_errors", revised)]:
+            expected_errors = matrix_errors(value, KNOWN_T[dataset])
+            for metric, error in expected_errors.items():
+                np.testing.assert_allclose(record[key][metric], error, rtol=0, atol=1e-8)
 
 
 def verify(root, data_dir):
@@ -47,6 +69,7 @@ def verify(root, data_dir):
     total_matrices = 0
     total_predictions = 0
     checked_labels = 0
+    total_inputs = total_revised = checked_pre_revision = 0
 
     for dataset in datasets:
         dataset_rows = [
@@ -122,14 +145,11 @@ def verify(root, data_dir):
             total_splits += 1
 
             # Verify estimated transition matrix
-            T = np.load(folder / "T_estimated.npy")
-
-            assert T.shape == (3, 3)
-            assert np.isfinite(T).all()
-            assert np.all(T >= -1e-7)
-            assert np.allclose(
-                T.sum(axis=1), 1, atol=1e-5
-            )
+            T = validate_transition(np.load(folder / "T_estimated.npy"))
+            estimator = json.loads((folder / "estimator.json").read_text())
+            if dataset in KNOWN_T:
+                for metric, error in matrix_errors(T, KNOWN_T[dataset]).items():
+                    np.testing.assert_allclose(estimator["errors"][metric], error, rtol=0, atol=1e-8)
 
             total_matrices += 1
 
@@ -140,6 +160,21 @@ def verify(root, data_dir):
                 record = json.loads(
                     stem.with_suffix(".json").read_text()
                 )
+                assert (record["dataset"], record["seed"], record["mode"], record["method"]) == (
+                    dataset, seed, mode, method)
+                verify_classifier_matrices(folder, dataset, mode, method, T, record)
+                total_inputs += 1
+                if method == "Reweight-R":
+                    total_revised += 1
+                    pre = np.load(str(stem) + "_pre_revision_predictions.npy")
+                    assert pre.shape == (3000,) and np.all(np.isin(pre, [0, 1, 2]))
+                    np.testing.assert_allclose(
+                        record["revision_gain_pp"],
+                        record["accuracy"] - record["accuracy_before_revision"], rtol=0, atol=1e-8)
+                    if labels is not None:
+                        np.testing.assert_allclose(
+                            record["accuracy_before_revision"], 100 * np.mean(pre == labels), rtol=0, atol=1e-8)
+                        checked_pre_revision += 1
 
                 predictions = np.load(
                     str(stem) + "_predictions.npy"
@@ -217,6 +252,8 @@ def verify(root, data_dir):
         f"{total_predictions} predictions, "
         f"{len(rows)} summaries."
     )
+    print(f"PASS: {total_inputs} classifier input matrices match their clean-row sources; "
+          f"{total_revised} revised matrices are row-stochastic and their errors/changes match.")
 
     if checked_labels:
         print(
@@ -224,6 +261,7 @@ def verify(root, data_dir):
             f"{checked_labels}/{total_predictions} "
             f"test accuracies using clean labels."
         )
+        print(f"PASS: Recomputed {checked_pre_revision} pre-revision test accuracies and checked paired gains.")
     else:
         print(
             "LIMITATION: No original .npz datasets found. "
@@ -245,7 +283,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data-dir",
         type=Path,
-        default=here / "data"
+        default=default_data_dir(),
+        help="Dataset directory; default: data/ beside this Python script"
     )
 
     args = parser.parse_args()

@@ -2,14 +2,15 @@
 
     python run_experiments.py                       # FashionMNIST0.3 + 0.6 (given T)
     python run_experiments.py --datasets CIFAR --T_file estimated_T.npy
-Reads data/<name>.npz, writes final_results/{raw_runs.json, summary.csv, accuracy_summary_table.tex}.
+Reads data/<name>.npz relative to this script by default; --data_dir overrides it.
+Writes final_results/{raw_runs.json, summary.csv, accuracy_summary_table.tex}.
 """
 import argparse, json, os, time
 import numpy as np
 
 from algorithm import METHODS
 from evaluation import top1_accuracy, summarize, write_csv, write_latex_table
-from experiments.data_utils import KNOWN_T, load_dataset, split_train_val, standardize
+from experiments.data_utils import KNOWN_T, default_data_dir, load_dataset, split_train_val, standardize
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--datasets", nargs="+", default=["FashionMNIST0.3", "FashionMNIST0.6"])
@@ -17,7 +18,7 @@ ap.add_argument("--methods", nargs="+", default=list(METHODS))
 ap.add_argument("--runs", type=int, default=10)
 ap.add_argument("--epochs", type=int, default=10)
 ap.add_argument("--T_file", default=None, help=".npy 3x3 matrix, required for CIFAR")
-ap.add_argument("--data_dir", default="data")
+ap.add_argument("--data_dir", default=default_data_dir())
 ap.add_argument("--out", default="final_results")
 a = ap.parse_args()
 

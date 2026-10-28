@@ -14,7 +14,8 @@ from algorithm.forward_correction import ForwardCorrection
 from algorithm.revision_evaluation import EvaluatedReweightTRevision
 from algorithm.transition_estimation import AnchorTransitionEstimator, matrix_errors, validate_transition
 from evaluation import top1_accuracy
-from experiments.data_utils import KNOWN_T, load_dataset, standardize
+from experiments.data_utils import KNOWN_T, default_data_dir, load_dataset, standardize
+from transition_matrix import TRANSITION_CONVENTION
 
 
 def atomic_json(path, value):
@@ -41,10 +42,11 @@ def file_hash(path):
 def experiment_manifest(args):
     root = Path(__file__).resolve().parent
     sources = sorted((root / "algorithm").glob("*.py")) + [
-        root / "experiments/data_utils.py", root / "evaluation.py", Path(__file__)]
+        root / "experiments/data_utils.py", root / "transition_matrix.py",
+        root / "evaluation.py", Path(__file__)]
     config = {k: getattr(args, k) for k in ["epochs", "estimator_epochs", "top_k", "warm",
               "revision_epochs", "fashion_estimated", "threads"]}
-    return {"schema_version": 1, "config": config,
+    return {"schema_version": 2, "transition_convention": TRANSITION_CONVENTION, "config": config,
             "data_sha256": {d: file_hash(Path(args.data_dir) / (d + ".npz")) for d in args.datasets},
             "source_sha256": {str(p.relative_to(root)): file_hash(p) for p in sources},
             "python": platform.python_version(), "numpy": np.__version__, "torch": torch.__version__,
@@ -141,7 +143,8 @@ def run_split(dataset, seed, config, data_dir, output, estimate_only=False):
 def main(argv=None):
     root = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=root / "data")
+    parser.add_argument("--data-dir", type=Path, default=default_data_dir(),
+                        help="Dataset directory; default: data/ beside this Python script")
     parser.add_argument("--out", type=Path, default=root / "evaluation_results")
     parser.add_argument("--datasets", nargs="+", choices=[*KNOWN_T, "CIFAR"], default=[*KNOWN_T, "CIFAR"])
     parser.add_argument("--runs", type=int, default=10)
@@ -186,6 +189,7 @@ def main(argv=None):
                 print(f"Completed {result['dataset']} seed={result['seed']}", flush=True)
     from summarize_evaluation import summarize_results
     summarize_results(args.out)
+
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import numpy as np
-from experiments.data_utils import split_train_val, standardize, _to_nchw
+from pathlib import Path
+from experiments.data_utils import default_data_dir, split_train_val, standardize, _to_nchw
 
 
 def test_split_is_80_20_disjoint_and_seeded():
@@ -24,3 +25,9 @@ def test_shapes():
     assert _to_nchw(np.zeros((5, 784), dtype=np.uint8)).shape == (5, 1, 28, 28)
     assert _to_nchw(np.zeros((5, 32, 32, 3), dtype=np.uint8)).shape == (5, 3, 32, 32)
     assert _to_nchw(np.full((2, 784), 255, dtype=np.uint8)).max() == 1.0
+
+
+def test_default_datasets_are_in_data_folder_even_from_another_directory(tmp_path, monkeypatch):
+    import run_evaluation
+    monkeypatch.chdir(tmp_path)
+    assert default_data_dir() == Path(run_evaluation.__file__).resolve().parent / "data"

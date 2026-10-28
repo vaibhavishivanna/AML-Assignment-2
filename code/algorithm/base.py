@@ -12,6 +12,7 @@ import torch.nn.functional as F
 
 from .losses import ce_loss, forward_loss
 from .networks import SmallCNN
+from transition_matrix import validate_transition
 
 torch.set_num_threads(2)
 
@@ -59,6 +60,7 @@ class BaseClassifier:
         return best
 
     def fit(self, Xtr, Str, T, Xval, Sval, seed=0):
+        T = validate_transition(T)
         torch.manual_seed(seed)
         rng = np.random.RandomState(seed)
         Xt, Xv = torch.as_tensor(Xtr), torch.as_tensor(Xval)

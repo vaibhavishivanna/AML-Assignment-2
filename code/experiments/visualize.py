@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from .data_utils import KNOWN_T, load_dataset, dataset_name
+from .data_utils import KNOWN_T, default_data_dir, load_dataset, dataset_name
 
 NOISY, CLEAN, GREY = "#D55E00", "#009E73", "#666666"   # vermillion / green: colour-blind safe, no blue
 
@@ -74,7 +74,8 @@ def plot_transition_matrices(out_dir, extra=None):
     return f
 
 
-def make_data_figures(data_dir="data", out_dir="final_results/figures"):
+def make_data_figures(data_dir=None, out_dir="final_results/figures"):
+    data_dir = default_data_dir() if data_dir is None else data_dir
     os.makedirs(out_dir, exist_ok=True)
     paths = [os.path.join(data_dir, n + ".npz") for n in ("FashionMNIST0.3", "FashionMNIST0.6", "CIFAR")]
     paths = [p for p in paths if os.path.exists(p)]

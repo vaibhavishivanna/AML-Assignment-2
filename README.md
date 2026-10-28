@@ -1,63 +1,91 @@
-# Assignment 2 – label-noise robust classifiers + data preparation (Group 39)
+# Assignment 2 - robust learning with label noise (Group 39)
 
-## Reproduce the complete required experiment
+## Run the current experiment
 
-See [code/README_PERSON3.md](code/README_PERSON3.md) for setup and results.
-From `code/`, install `requirements.txt`, place the provided datasets in `data/`,
-and run:
+From `code/`, install `requirements.txt` in a Python 3.12 environment and put
+`FashionMNIST0.3.npz`, `FashionMNIST0.6.npz` and `CIFAR.npz` in `code/data/`. PyTorch is used for the CNN and optimization, as permitted by the supplied
+staff clarification. The robust losses and transition estimator are implemented here.
 
 ```sh
-python run_evaluation.py --out reproduced_results
+python -m pip install -r requirements.txt
+python -m pytest -q tests
+python run_evaluation.py --runs 10 --top-k 10 --revision-epochs 8 --out reproduced_results
+python verify_evaluation.py --results reproduced_results
 ```
 
-Tested fresh runtime: **47.75 minutes** on this laptop, including all
-30 initial models, 60 classifier fits, evaluation and plots. Dependency installation
-and dataset setup are excluded. All methods use ten random splits per dataset.
+The default dataset directory is `data/` relative to the Python scripts, so
+launching from another working directory also works. `--data-dir PATH` supports
+another relative directory when needed. Keep `code/data/.gitkeep` in Git and
+exclude the datasets from Git and the submission ZIP. The default uses two workers
+with two PyTorch threads each.
+Use a fresh output directory after changing source, settings, data or environment;
+the manifest rejects incompatible cached runs.
 
-The ZIP includes the completed run in `code/reference_results/`; the working
-repository uses `code/evaluation_results/`. Vaibhavi's original results remain
-in `code/final_results/`. The commands below are her original classifier workflow.
+## Transition-matrix convention
 
-## Original classifier documentation
+**Every component uses `T[i,j] = P(noisy=j | clean=i)`: clean rows, noisy columns.**
+Rows sum to one, and row-vector posteriors satisfy `p_noisy = p_clean @ T`.
+`code/transition_matrix.py` defines this contract, the supplied matrices and validation.
 
-Scope of this folder: **data preparation** and the **classification models** (CE baseline, Forward,
-Backward, Reweighting + T-Revision). The transition-matrix estimator is a separate part; its output
-(3x3 `.npy`) is the only thing needed here to run CIFAR.
+This matches the supplied assignment matrices and the staff clarification in the
+screenshots. The lecture convention has noisy rows and clean columns:
+`T_lecture = T.T`. Only transpose when converting between these two definitions;
+do not transpose the supplied matrices before using this code. For FashionMNIST0.3,
+a clean class-0 example becomes noisy class 1 with probability 0.3 (class 2: 0).
+The symmetric FashionMNIST0.6 matrix cannot expose a transpose mistake, so the
+tests also check asymmetric matrices and directional probabilities.
 
-Requirements: Python 3.9+, numpy, torch (CPU is enough), matplotlib; pytest for the tests.
+Both implemented robust classifiers use the matrices. Staff allow either, both or
+neither classifier to use them; the existing choice remains valid. CIFAR estimation,
+its classifier inputs, matrix errors and heatmap axes all follow the same convention.
+A stochasticity check alone cannot identify the intended orientation of every matrix.
 
-## Layout
-    algorithm/          networks.py, losses.py, base.py (shared training loop + model selection)
-                        ce_baseline.py, forward_correction.py, backward_correction.py,
-                        reweight_t_revision.py
-    data/               EMPTY in the submission - copy FashionMNIST0.3.npz, FashionMNIST0.6.npz, CIFAR.npz here
-    experiments/        data_utils.py (loading, preprocessing, 80/20 split, given T),
-                        visualize.py (data figures), run_demo.py (1-minute demo)
-    final_results/      summary.csv, accuracy_summary_table.tex, raw_runs.json, run_log.txt, figures/
-    tests/              unit tests (losses, data prep, classifiers)
-    run_experiments.py  full experiment: 10 random 80/20 splits x methods x datasets (resumable)
-    evaluation.py       top-1 accuracy, mean +- std, CSV / LaTeX table
-    plot_results.py     accuracy comparison figure
-    demo_algorithms.py  numeric check that backward correction is unbiased
+## Current results and protocol
 
-## How to run
-    pip install numpy torch matplotlib pytest
-    python -m pytest -q tests                       # unit tests
-    python demo_algorithms.py                       # loss sanity check
-    python -m experiments.visualize                 # data figures -> final_results/figures
-    python -m experiments.run_demo data/FashionMNIST0.3.npz     # quick demo (~1 min)
+`code/final_evaluation/` contains the historical shared-report records, preserved
+separately from the other experiment sets. Rebuild their tables
+and plots with `python summarize_evaluation.py final_evaluation` and audit them
+with `python verify_evaluation.py --results final_evaluation` from `code/`.
+See `code/README_PERSON3.md` for provenance, settings and limitations.
 
-    python run_experiments.py                       # FashionMNIST0.3 + 0.6, given T (about 40 min per dataset on 2 CPU cores)
-    python run_experiments.py --datasets CIFAR --T_file estimated_T.npy    # CIFAR with the estimated T
-    python plot_results.py                          # figures/accuracy_comparison.png
+- Ten independent random 80/20 splits, seeds 0-9, shared by the two classifiers.
+- Four estimator epochs; four Forward epochs.
+- Reweight-R: two warm-up, four fixed-matrix and eight forward-loss revision epochs.
+- Supplied FashionMNIST matrices; per-split top-ten-anchor estimates for CIFAR.
+- Training-split channel standardization; no augmentation or label cleaning.
+- Noisy-validation checkpoint selection; clean labels used for final testing only.
+- Test top-1 accuracy reported as mean and population SD (`ddof=0`).
 
-`run_experiments.py` resumes from `final_results/raw_runs.json`, so an interrupted run can be restarted.
+The final results are historical experiment records, not outputs regenerated by
+this code review. The `evaluation_results/` directory contains an older experiment
+with one anchor and two revision epochs; `final_results/` is the original classifier
+study. Their settings and results must not be mixed with `final_evaluation/`.
 
-## Preprocessing
-pixels /255 -> float32; FashionMNIST reshaped to 1x28x28, CIFAR to 3x32x32; per-channel standardisation
-using statistics of the training split only; no augmentation; labels used as given.
-The 80/20 train/validation split is drawn independently per run (seeds 0-9).
+## Code layout
 
-## Protocol
-All classifiers use the same CNN. Model selection uses only the noisy validation split (forward-corrected
-NLL under the supplied T). The clean test set is used only for the final top-1 accuracy.
+- `transition_matrix.py`: shared matrix convention, supplied matrices and checks.
+- `algorithm/`: CNN, training, CE/Forward/Backward/reweighting losses, estimator,
+  and Reweight-R (a T-Revision-inspired hybrid with a forward-loss revision stage).
+- `experiments/`: dataset loading, train-only preprocessing, visualization and demo.
+- `run_evaluation.py`: per-split estimation, both robust classifiers and saved evidence.
+- `summarize_evaluation.py`, `verify_evaluation.py`: summaries and independent audit.
+- `tests/`: numerical loss, orientation, data preparation and pipeline checks.
+- `data/`: datasets go here locally; `.gitkeep` is tracked and datasets are ignored.
+  Leave datasets out of the submission ZIP; the assessor copies them here.
+
+## Original classifier workflow
+
+These commands run the older standalone workflow from `code/`:
+
+```sh
+python demo_algorithms.py
+python -m experiments.visualize
+python -m experiments.run_demo data/FashionMNIST0.3.npz
+python run_experiments.py
+python run_experiments.py --datasets CIFAR --T_file estimated_T.npy
+python plot_results.py
+```
+
+The external matrix for the standalone CIFAR command must use clean rows and
+noisy columns. For per-split CIFAR estimation and the final protocol use
+`run_evaluation.py` above.

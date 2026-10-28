@@ -2,17 +2,7 @@
 import numpy as np
 
 from .ce_baseline import CrossEntropyBaseline
-
-
-def validate_transition(T, n_classes=3):
-    T = np.asarray(T, dtype=np.float64)
-    if T.shape != (n_classes, n_classes):
-        raise ValueError(f"Expected a {n_classes}x{n_classes} transition matrix")
-    if not np.isfinite(T).all() or (T < 0).any():
-        raise ValueError("Transition entries must be finite and nonnegative")
-    if not np.allclose(T.sum(axis=1), 1.0, atol=1e-5):
-        raise ValueError("Transition matrix rows must sum to one")
-    return T
+from transition_matrix import matrix_errors, validate_transition
 
 
 def estimate_from_probabilities(probabilities, top_k=1):
@@ -33,14 +23,6 @@ def estimate_from_probabilities(probabilities, top_k=1):
     T /= T.sum(1, keepdims=True)
     validate_transition(T, p.shape[1])
     return T.astype(np.float32), anchors
-
-
-def matrix_errors(estimate, truth):
-    estimate, truth = validate_transition(estimate), validate_transition(truth)
-    diff = estimate - truth
-    return {"mae": float(np.abs(diff).mean()),
-            "frobenius": float(np.linalg.norm(diff, ord="fro")),
-            "relative_l1": float(np.abs(diff).sum() / np.abs(truth).sum())}
 
 
 class AnchorTransitionEstimator:

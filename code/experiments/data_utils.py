@@ -8,14 +8,16 @@ Preprocessing (justified in the report):
   * no augmentation, no label cleaning (labels are used exactly as given)
 """
 import os
+from pathlib import Path
 import numpy as np
+from transition_matrix import KNOWN_T
 
-# T[i, j] = P(noisy label = j | clean label = i)
-KNOWN_T = {
-    "FashionMNIST0.3": np.array([[0.7, 0.3, 0.0], [0.0, 0.7, 0.3], [0.3, 0.0, 0.7]]),
-    "FashionMNIST0.6": np.array([[0.4, 0.3, 0.3], [0.3, 0.4, 0.3], [0.3, 0.3, 0.4]]),
-}
 DATASETS = ["FashionMNIST0.3", "FashionMNIST0.6", "CIFAR"]
+
+
+def default_data_dir():
+    """Use code/data relative to the scripts, independent of launch cwd."""
+    return Path(__file__).resolve().parents[1] / "data"
 
 
 def dataset_name(path):

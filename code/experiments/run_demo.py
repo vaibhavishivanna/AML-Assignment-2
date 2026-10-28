@@ -4,9 +4,9 @@ import sys
 import numpy as np
 from algorithm import METHODS
 from evaluation import top1_accuracy
-from experiments.data_utils import KNOWN_T, dataset_name, load_dataset, split_train_val, standardize
+from experiments.data_utils import KNOWN_T, default_data_dir, dataset_name, load_dataset, split_train_val, standardize
 
-path = sys.argv[1] if len(sys.argv) > 1 else "data/FashionMNIST0.3.npz"
+path = sys.argv[1] if len(sys.argv) > 1 else default_data_dir() / "FashionMNIST0.3.npz"
 Xtr, Str, Xts, Yts = load_dataset(path)
 T = KNOWN_T[dataset_name(path)]
 Xt, St, Xv, Sv = split_train_val(Xtr[:3000], Str[:3000], seed=0)
