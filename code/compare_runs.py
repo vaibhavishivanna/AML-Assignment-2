@@ -1,149 +1,57 @@
+"""Reproduce paired confidence intervals, p-values and Holm adjustment.
 
+Example: python compare_runs.py --results reproduced_results
+Reads per-run JSON evidence from the selected experiment, never a historical
+hard-coded directory. Figure generation is handled by generate_report_assets.py.
+"""
+import argparse
+import csv
+import json
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+from paired_analysis import analyze_saved_runs
 
 
-# Paths
-RESULTS_DIR = Path(__file__).resolve().parent / "evaluation_results"
-INPUT_FILE = RESULTS_DIR / "accuracy_per_run.csv"
-
-OUTPUT_CSV = RESULTS_DIR / "paired_comparison.csv"
-OUTPUT_FIGURE = RESULTS_DIR / "paired_accuracy.png"
-
-METHODS = ["Forward", "Reweight-R"]
-DATASETS = ["FashionMNIST0.3", "FashionMNIST0.6", "CIFAR"]
-
-
-def compare_runs():
-    if not INPUT_FILE.exists():
-        raise FileNotFoundError(
-            f"Cannot find {INPUT_FILE}. "
-            "Run summarize_evaluation.py first."
-        )
-
-    df = pd.read_csv(INPUT_FILE)
-
-    required_columns = {
-        "dataset", "seed", "method", "accuracy"
-    }
-
-    if not required_columns.issubset(df.columns):
-        raise ValueError("Missing required columns in results CSV.")
-
-    comparisons = []
-
-    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
-
-    for ax, dataset in zip(axes, DATASETS):
-        data = df[df["dataset"] == dataset]
-
-        if data.empty:
-            raise ValueError(f"No results for {dataset}")
-
-        # Pair both methods using the same random seed
-        paired = data.pivot(
-            index="seed",
-            columns="method",
-            values="accuracy"
-        ).sort_index()
-
-        if not set(METHODS).issubset(paired.columns):
-            raise ValueError(f"Missing classifier results: {dataset}")
-
-        paired = paired[METHODS].dropna()
-
-        if len(paired) < 10:
-            raise ValueError(
-                f"{dataset}: expected at least 10 paired runs."
-            )
-
-        forward = paired["Forward"].to_numpy()
-        reweight = paired["Reweight-R"].to_numpy()
-        seeds = paired.index.to_numpy()
-
-        # Calculate paired accuracy differences
-        differences = reweight - forward
-
-        comparison = {
-            "dataset": dataset,
-            "n_runs": len(paired),
-            "forward_mean": np.mean(forward),
-            "forward_std": np.std(forward, ddof=0),
-            "reweight_mean": np.mean(reweight),
-            "reweight_std": np.std(reweight, ddof=0),
-            "mean_difference": np.mean(differences),
-            "difference_std": np.std(differences, ddof=0),
-            "forward_wins": int(np.sum(differences < 0)),
-            "reweight_wins": int(np.sum(differences > 0)),
-            "ties": int(np.sum(differences == 0)),
-        }
-
-        comparisons.append(comparison)
-
-        # Plot accuracy for each random seed
-        ax.plot(
-            seeds,
-            forward,
-            marker="o",
-            label="Forward Correction",
-        )
-
-        ax.plot(
-            seeds,
-            reweight,
-            marker="s",
-            label="Reweight-R",
-        )
-
-        ax.set_title(dataset)
-        ax.set_xlabel("Random seed")
-        ax.set_ylabel("Test accuracy (%)")
-        ax.set_xticks(seeds)
-        ax.grid(True, alpha=0.3)
-        ax.legend()
-
-    # Save the graph
-    fig.suptitle(
-        "Paired Classification Accuracy Across Random Seeds",
-        fontsize=14,
-    )
-
-    fig.tight_layout()
-    fig.savefig(OUTPUT_FIGURE, dpi=300, bbox_inches="tight")
-    plt.close(fig)
-
-    # Save the comparison table
-    results = pd.DataFrame(comparisons)
-    results.to_csv(OUTPUT_CSV, index=False)
-
-    print("\nPAIRED CLASSIFIER COMPARISON")
-    print("=" * 65)
-
-    for row in comparisons:
-        print(f"\nDataset: {row['dataset']}")
-        print(
-            f"Forward:    {row['forward_mean']:.2f} "
-            f"+/- {row['forward_std']:.2f}%"
-        )
-        print(
-            f"Reweight-R: {row['reweight_mean']:.2f} "
-            f"+/- {row['reweight_std']:.2f}%"
-        )
-        print(
-            f"Mean difference (Reweight - Forward): "
-            f"{row['mean_difference']:+.2f} pp"
-        )
-        print(f"Forward wins: {row['forward_wins']}")
-        print(f"Reweight wins: {row['reweight_wins']}")
-        print(f"Ties: {row['ties']}")
-
-    print("\nSaved outputs:")
-    print(OUTPUT_CSV)
-    print(OUTPUT_FIGURE)
+def compare_runs(results, output=None):
+    results = Path(results)
+    rows = analyze_saved_runs(results)
+    output = Path(output) if output is not None else results / "analysis"
+    output.mkdir(parents=True, exist_ok=True)
+    fields = ["dataset", "mode", "n_runs", "forward_mean", "forward_std", "reweight_mean",
+              "reweight_std", "mean_difference_pp", "difference_std_sample", "ci95_low_pp",
+              "ci95_high_pp", "p_value", "p_value_holm", "forward_wins", "reweight_wins", "ties"]
+    with (output / "paired_comparison.csv").open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows({key: row[key] for key in fields} for row in rows)
+    with (output / "paired_per_run.csv").open("w", newline="") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(["dataset", "mode", "seed", "forward_accuracy", "reweight_accuracy", "difference_pp"])
+        for row in rows:
+            for values in zip(row["seeds"], row["forward"], row["reweight"], row["differences_pp"]):
+                writer.writerow([row["dataset"], row["mode"], *values])
+    evidence = {"source_results": str(results.resolve()), "comparisons": rows,
+                "inference": "Two-sided paired t; sample SD; individual 95% CIs; "
+                             "Holm adjustment over all dataset/mode comparisons in this export",
+                "descriptive_sd_ddof": 0, "paired_sd_ddof": 1}
+    (output / "paired_analysis.json").write_text(json.dumps(evidence, indent=2, allow_nan=False) + "\n")
+    lines = [r"\begin{tabular}{llrrrr}",
+             r"Dataset & Matrix & Difference (pp) & 95\% CI & $p$ & Holm $p$ \\", r"\hline"]
+    for row in rows:
+        interval = f"[{row['ci95_low_pp']:.2f}, {row['ci95_high_pp']:.2f}]"
+        lines.append(f"{row['dataset']} & {row['mode']} & {row['mean_difference_pp']:+.2f} & "
+                     f"{interval} & {row['p_value']:.5f} & {row['p_value_holm']:.5f} " + r"\\")
+        print(f"{row['dataset']} ({row['mode']}): {row['mean_difference_pp']:+.2f} pp, "
+              f"95% CI {interval}, p={row['p_value']:.6f}, Holm p={row['p_value_holm']:.6f}")
+    (output / "paired_comparison.tex").write_text("\n".join(lines + [r"\end{tabular}"]) + "\n")
+    print(f"Saved paired analysis to {output}")
+    return rows
 
 
 if __name__ == "__main__":
-    compare_runs()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--results", type=Path, required=True,
+                        help="Completed experiment containing per-seed classifier JSON records")
+    parser.add_argument("--out", type=Path, help="Default: analysis/ inside --results")
+    args = parser.parse_args()
+    compare_runs(args.results, args.out)

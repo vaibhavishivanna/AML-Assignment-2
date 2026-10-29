@@ -167,5 +167,5 @@ def plot_results(output, matrices, accuracy, revisions):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("output", type=Path, nargs="?", default=Path(__file__).resolve().parent / "evaluation_results")
+    parser.add_argument("output", type=Path, nargs="?", default=Path(__file__).resolve().parent / "reproduced_results")
     summarize_results(parser.parse_args().output)

@@ -1,0 +1,9 @@
+CIFAR             Forward    (estimated)  64.72 +/-  8.90% (10 runs)
+CIFAR             Reweight-R (estimated)  65.68 +/-  7.55% (10 runs)
+FashionMNIST0.3   Forward    (known)  98.51 +/-  0.11% (10 runs)
+FashionMNIST0.3   Reweight-R (known)  98.80 +/-  0.13% (10 runs)
+FashionMNIST0.6   Forward    (known)  95.05 +/-  0.97% (10 runs)
+FashionMNIST0.6   Reweight-R (known)  95.21 +/-  0.66% (10 runs)
+PASS: 30 splits, 30 estimated matrices, 60 predictions, 6 summaries.
+PASS: 60 classifier input matrices match their clean-row sources; 30 revised matrices and their errors/changes checked.
+PASS: Recomputed 60/60 final and 30 pre-revision accuracies using clean labels.

@@ -55,13 +55,15 @@ def test_evaluation_hook_preserves_vaibhavi_classifier():
     assert audited.pre_revision_model_ is not audited.model
 
 
-def test_cifar_pipeline_saves_matrices_predictions_and_resumes(tmp_path, monkeypatch):
+@pytest.mark.parametrize("seed_start", [0, 7])
+def test_cifar_pipeline_saves_matrices_predictions_and_resumes(tmp_path, monkeypatch, seed_start):
     rng = np.random.RandomState(7)
     data, out = tmp_path / "data", tmp_path / "results"
     data.mkdir()
     np.savez(data / "CIFAR.npz", Xtr=rng.randint(0, 256, (30, 32, 32, 3), dtype=np.uint8),
              Str=np.arange(30) % 3, Xts=rng.randint(0, 256, (6, 32, 32, 3), dtype=np.uint8), Yts=np.arange(6) % 3)
     argv = ["--data-dir", str(data), "--out", str(out), "--datasets", "CIFAR", "--runs", "1",
+            "--seed-start", str(seed_start),
             "--epochs", "1", "--estimator-epochs", "1", "--warm", "1", "--revision-epochs", "1", "--workers", "1"]
     # Reuse initial estimates during full evaluation.
     main(argv + ["--estimate-only"])
@@ -69,7 +71,7 @@ def test_cifar_pipeline_saves_matrices_predictions_and_resumes(tmp_path, monkeyp
     manifest = json.loads(manifest_path.read_text())
     manifest["source_cleanup"] = {"note": "Comments shortened"}
     manifest_path.write_text(json.dumps(manifest))
-    folder = out / "CIFAR/seed_00"
+    folder = out / f"CIFAR/seed_{seed_start:02d}"
     assert (folder / "T_estimated.npy").exists() and not (folder / "metrics.json").exists()
     assert not (folder / "noisy_model.pt").exists()
     assert not (out / "accuracy_table.tex").exists()

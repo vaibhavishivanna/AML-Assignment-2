@@ -1,0 +1,26 @@
+.....................................................                    [100%]
+=============================== warnings summary ===============================
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+  /tmp/aml2-submission-venv/lib/python3.12/site-packages/matplotlib/_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+  /tmp/aml2-submission-venv/lib/python3.12/site-packages/matplotlib/_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_transition_estimation.py::test_cifar_pipeline_saves_matrices_predictions_and_resumes[0]
+  /tmp/aml2-submission-venv/lib/python3.12/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+53 passed, 13 warnings in 15.03s

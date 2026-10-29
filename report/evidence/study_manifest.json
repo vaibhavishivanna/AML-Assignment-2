@@ -1,0 +1,27 @@
+{
+  "study_source_sha256": "adc912a4ea05d2d09663a6ac8bf3ddf6907b357ebdbb8a389568c5d5ad3d2277",
+  "baseline_manifest_sha256": "997bcf36ec36fec7c9913ae000eb590d582e9e7f266b1a096d28cb9a3e78cb01",
+  "data_sha256": {
+    "FashionMNIST0.3": "9141a8c362b5d87b5db3905fd3117587eb1cbdcfcd9cc6269eb921f885f5f6c1",
+    "FashionMNIST0.6": "8e7613fb618acac31d8d31c9a00f4ac740bb48a8952598a34ae848aaabbb57a9",
+    "CIFAR": "1c38a86896df4f97cfa13338f6c44d4dae898ac949796ec41f75f0d0ac23565a"
+  },
+  "baseline": "/Users/nihirasharma/Downloads/AML2/AML-Assignment-2/code/runtime_optimization_20261029/full_mixed/w4_t1",
+  "runs": 10,
+  "threads": 1,
+  "scope": "Supplementary controls; canonical experiment unchanged",
+  "source_sha256": {
+    "algorithm/__init__.py": "75859f1fb9d81ef90050baa714ca4b0f77724d145f0c86bb2610277a55f73e62",
+    "algorithm/backward_correction.py": "c9d0c0228b2c076649f5e3e28425ce92cea99277e7cbae851010fcae8ddeb2b9",
+    "algorithm/base.py": "8e41587df5781edb631978acc71c9eef9b1cd19ee1460304f54576ed3f134836",
+    "algorithm/ce_baseline.py": "1dc9e3beafbc4993512c95ad8a1250ae69328fb2aa6db26d461f2e12584c816b",
+    "algorithm/forward_correction.py": "c98db0adc6bb9e7f7e540b4f4fba193774051bc50f1a34aecac1892df3e0e588",
+    "algorithm/losses.py": "873dbf7cd5ae474b485846d2ad95bcad63bf944690d4317ba9b2802471b59858",
+    "algorithm/networks.py": "dcec81224b73b95067026fba7051af62be3df152683be01846f58e3756622fec",
+    "algorithm/revision_evaluation.py": "01f1ceae11e70dc73c38c4d91abe359479ab88876c8ba9922c4868d54b41e3e7",
+    "algorithm/reweight_t_revision.py": "efcde1bd069555f8fce4a706ff4f9c88b8ddc2f57987cead5a87a995eac02c7b",
+    "algorithm/transition_estimation.py": "01e8839eafe125240a339dbc50f261f3c4080c1b3c0374a918262983d980a8ae",
+    "experiments/data_utils.py": "b4b30e9cf77f63943e29ab1357fb9a7f5fec5e948e37a51c24afa98ab5275ba3",
+    "transition_matrix.py": "a2ab715853bb249b401a40f655a3c31d196d523d6258d1388a4b2f21d7c5ffe8"
+  }
+}

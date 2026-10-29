@@ -23,7 +23,7 @@ class ReweightTRevision(BaseClassifier):
     This is a modified T-Revision-inspired approach, not an exact
     reproduction of Xia et al. (NeurIPS 2019).
     """
-    name = "T-Revision"
+    name = "Reweight-R"
 
     def __init__(self, warm=3, rev_epochs=8, lr_rev=1e-4, lr_dT=1e-4, **kw):
         super().__init__(**kw)

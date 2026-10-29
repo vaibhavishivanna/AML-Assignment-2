@@ -23,3 +23,17 @@ code/*.npz
 /code/revision_lr_diagnostic/
 /code/revision_lr_diagnostic_v2/
 /code/revision_lr_test/
+/code/reproduced_results/
+/code/quick_check/
+/code/report_controls/
+/code/report_controls_*/
+/code/report_tables/
+/code/quick_controls/
+# Local LaTeX build products; retain report/evidence logs.
+/report/*.aux
+/report/*.bbl
+/report/*.blg
+/report/*.out
+/report/*.log
+/report/*.xdv
+/report/*.synctex.gz

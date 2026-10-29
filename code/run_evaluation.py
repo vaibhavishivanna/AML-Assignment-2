@@ -148,7 +148,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", type=Path, default=default_data_dir(),
                         help="Dataset directory; default: data/ beside this Python script")
-    parser.add_argument("--out", type=Path, default=root / "evaluation_results")
+    parser.add_argument("--out", type=Path, default=root / "reproduced_results")
     parser.add_argument("--datasets", nargs="+", choices=[*KNOWN_T, "CIFAR"], default=[*KNOWN_T, "CIFAR"])
     parser.add_argument("--runs", type=int, default=10)
     parser.add_argument("--seed-start", type=int, default=0)

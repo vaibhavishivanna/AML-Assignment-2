@@ -1,4 +1,4 @@
-"""Shared training loop. Subclasses only choose the loss (and, for T-Revision, extra stages).
+"""Shared training loop. Subclasses only choose the loss (and, for Reweight-R, extra stages).
 
 Interface (identical for every classifier):
     clf.fit(Xtr, Str, T, Xval, Sval, seed)   X: float32 (N, C, H, W), already preprocessed
